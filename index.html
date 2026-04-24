@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JJ Project - 로그인</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-logo">💬</div>
+    <h1>JJ Project</h1>
+    <p>채팅, 사진 공유, 일정 관리를<br>한 곳에서 편리하게!</p>
+
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Google로 로그인
+    </button>
+
+    <div class="login-divider">안전하게 보호됩니다</div>
+    <p style="font-size:0.8rem; color:#9ca3af;">로그인 시 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다.</p>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // 이미 로그인된 경우 채팅 페이지로 이동
+  supabaseClient.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      window.location.href = 'chat.html'
+    }
+  })
+</script>
+</body>
+</html>

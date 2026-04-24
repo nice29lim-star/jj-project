@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JJ Project - 갤러리</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- 네비게이션 -->
+<nav class="navbar">
+  <a href="chat.html" class="logo">💬 JJ Project</a>
+  <div class="nav-links">
+    <a href="chat.html">💬 채팅</a>
+    <a href="gallery.html" class="active">🖼️ 갤러리</a>
+    <a href="schedule.html">📅 일정</a>
+  </div>
+  <div class="user-info">
+    <img id="userAvatar" src="" alt="avatar">
+    <span id="userName"></span>
+    <button class="btn-logout" onclick="signOut()">로그아웃</button>
+  </div>
+</nav>
+
+<!-- 메인 -->
+<div class="container">
+  <div class="page-header">
+    <h2>🖼️ 사진 갤러리</h2>
+    <label for="fileInput" class="btn btn-primary" style="cursor:pointer;">📸 사진 업로드</label>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(event)">
+  </div>
+
+  <!-- 업로드 영역 -->
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">📸</div>
+    <p><strong>클릭하거나 사진을 드래그하세요</strong></p>
+    <p>JPG, PNG, GIF, WEBP 지원</p>
+  </div>
+
+  <!-- 갤러리 그리드 -->
+  <div class="gallery-grid" id="galleryGrid">
+    <div style="grid-column:1/-1; text-align:center; padding:40px; color:#9ca3af;">
+      로딩 중...
+    </div>
+  </div>
+</div>
+
+<!-- 이미지 미리보기 모달 -->
+<div class="image-preview-modal" id="imagePreviewModal" onclick="closePreview()">
+  <button class="close-btn" onclick="closePreview()">✕</button>
+  <img id="previewImg" src="" alt="preview" onclick="event.stopPropagation()">
+  <div class="preview-controls" onclick="event.stopPropagation()">
+    <span class="preview-title" id="previewTitle"></span>
+    <button class="btn btn-primary" id="previewDownload">⬇️ 다운로드</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/gallery.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JJ Project - 일정</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- 네비게이션 -->
+<nav class="navbar">
+  <a href="chat.html" class="logo">💬 JJ Project</a>
+  <div class="nav-links">
+    <a href="chat.html">💬 채팅</a>
+    <a href="gallery.html">🖼️ 갤러리</a>
+    <a href="schedule.html" class="active">📅 일정</a>
+  </div>
+  <div class="user-info">
+    <img id="userAvatar" src="" alt="avatar">
+    <span id="userName"></span>
+    <button class="btn-logout" onclick="signOut()">로그아웃</button>
+  </div>
+</nav>
+
+<!-- 메인 -->
+<div class="container">
+  <div class="page-header">
+    <h2>📅 일정 공유</h2>
+    <button class="btn btn-primary" onclick="openModal('addScheduleModal')">+ 일정 추가</button>
+  </div>
+
+  <!-- 일정 목록 -->
+  <div class="schedule-list" id="scheduleList">
+    <div style="text-align:center; padding:40px; color:#9ca3af;">로딩 중...</div>
+  </div>
+</div>
+
+<!-- 일정 추가 모달 -->
+<div class="modal-overlay" id="addScheduleModal">
+  <div class="modal">
+    <h2>📅 일정 추가</h2>
+    <div class="form-group">
+      <label>제목 *</label>
+      <input type="text" id="scheduleTitle" placeholder="일정 제목을 입력하세요">
+    </div>
+    <div class="form-group">
+      <label>설명 (선택)</label>
+      <textarea id="scheduleDescription" placeholder="일정 설명을 입력하세요"></textarea>
+    </div>
+    <div class="form-group">
+      <label>시작 날짜 *</label>
+      <input type="datetime-local" id="startDate">
+    </div>
+    <div class="form-group">
+      <label>종료 날짜 (선택)</label>
+      <input type="datetime-local" id="endDate">
+    </div>
+    <div class="form-group">
+      <label>색상</label>
+      <input type="color" id="scheduleColor" value="#4F46E5" style="height:40px; cursor:pointer;">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addScheduleModal')">취소</button>
+      <button class="btn btn-primary" onclick="addSchedule()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일정 수정 모달 -->
+<div class="modal-overlay" id="editScheduleModal">
+  <div class="modal">
+    <h2>✏️ 일정 수정</h2>
+    <input type="hidden" id="editScheduleId">
+    <div class="form-group">
+      <label>제목 *</label>
+      <input type="text" id="editScheduleTitle" placeholder="일정 제목을 입력하세요">
+    </div>
+    <div class="form-group">
+      <label>설명 (선택)</label>
+      <textarea id="editScheduleDescription" placeholder="일정 설명을 입력하세요"></textarea>
+    </div>
+    <div class="form-group">
+      <label>시작 날짜 *</label>
+      <input type="datetime-local" id="editStartDate">
+    </div>
+    <div class="form-group">
+      <label>종료 날짜 (선택)</label>
+      <input type="datetime-local" id="editEndDate">
+    </div>
+    <div class="form-group">
+      <label>색상</label>
+      <input type="color" id="editScheduleColor" value="#4F46E5" style="height:40px; cursor:pointer;">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('editScheduleModal')">취소</button>
+      <button class="btn btn-primary" onclick="updateSchedule()">수정</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/schedule.js"></script>
+</body>
+</html>
