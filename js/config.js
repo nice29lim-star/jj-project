@@ -46,7 +46,13 @@ async function checkAuth() {
       .select()
       .single()
 
+    if (insertError) {
+      alert('프로필 생성 에러: ' + insertError.message)
+    }
+
     if (!insertError) profile = newProfile
+  } else if (error && error.code !== 'PGRST116') {
+    alert('프로필 조회 에러: ' + error.message)
   }
 
   // 권한이 대기중인 경우
