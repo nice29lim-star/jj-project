@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JJ Project - 관리자 페이지</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #f3f4f6; }
+    .admin-table th { background-color: #f9fafb; font-weight: 600; color: #374151; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; }
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-approved { background-color: #d1fae5; color: #065f46; }
+    .status-admin { background-color: #dbeafe; color: #1e40af; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">JJ Project <span style="font-size:0.8rem; color:#ef4444; margin-left:5px;">(ADMIN)</span></div>
+  <div class="nav-links">
+    <a href="chat.html">채팅</a>
+    <a href="gallery.html">갤러리</a>
+    <a href="schedule.html">일정</a>
+    <a href="admin.html" class="active">관리자</a>
+  </div>
+  <div class="nav-user">
+    <img src="https://ui-avatars.com/api/?name=Admin" alt="User" class="nav-avatar" id="userAvatar">
+    <span id="userName">관리자</span>
+    <button class="btn btn-secondary" onclick="signOut()" style="padding: 6px 12px; font-size: 0.9rem;">로그아웃</button>
+  </div>
+</nav>
+
+<div class="app-container">
+  <div class="header-section">
+    <h2>회원 관리</h2>
+    <p>가입한 회원을 승인하거나 권한을 변경할 수 있습니다.</p>
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>이름</th>
+        <th>이메일</th>
+        <th>가입일</th>
+        <th>상태</th>
+        <th>권한 변경</th>
+      </tr>
+    </thead>
+    <tbody id="userList">
+      <tr><td colspan="5" style="text-align:center; padding:30px;">로딩 중...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

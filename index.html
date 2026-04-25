@@ -15,13 +15,22 @@
     <h1>JJ Project</h1>
     <p>채팅, 사진 공유, 일정 관리를<br>한 곳에서 편리하게!</p>
 
+    <div class="email-login-form">
+      <input type="email" id="loginEmail" placeholder="이메일" class="input-field" style="width:100%; margin-bottom:10px; padding:12px; border-radius:8px; border:1px solid #ddd;">
+      <input type="password" id="loginPassword" placeholder="비밀번호" class="input-field" style="width:100%; margin-bottom:15px; padding:12px; border-radius:8px; border:1px solid #ddd;">
+      <button class="btn btn-primary" style="width:100%; padding:12px; font-size:1rem; border-radius:8px;" onclick="signInWithEmail()">로그인</button>
+    </div>
+
+    <div class="login-divider">또는</div>
+
     <button class="btn-google" onclick="signInWithGoogle()">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-      Google로 로그인
+      Google로 시작하기
     </button>
 
-    <div class="login-divider">안전하게 보호됩니다</div>
-    <p style="font-size:0.8rem; color:#9ca3af;">로그인 시 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다.</p>
+    <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
+      계정이 없으신가요? <a href="signup.html" style="color:#4F46E5; text-decoration:none; font-weight:bold;">회원가입</a>
+    </div>
   </div>
 </div>
 
