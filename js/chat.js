@@ -5,6 +5,7 @@
 let currentRoomId = null
 let currentUser = null
 let realtimeSubscription = null
+let userCache = {} // 사용자 이름 캐시
 
 // 초기화
 async function initChat() {
@@ -59,10 +60,15 @@ async function enterRoom(room) {
   // 채팅방 제목 업데이트
   document.getElementById('currentRoomName').textContent = room.name
   document.getElementById('chatInputArea').style.display = 'flex'
+  document.getElementById('onlineUsersContainer').style.display = 'flex'
 
   // 활성 채팅방 표시
   document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'))
   event.currentTarget.classList.add('active')
+
+  // 프로필 정보가 없으면 가져오기
+  let profile = await supabaseClient.from('user_profiles').select('name').eq('id', currentUser.id).single()
+  if (profile.data) userCache[currentUser.id] = profile.data.name
 
   // 메시지 불러오기
   await loadMessages(room.id)
@@ -73,16 +79,48 @@ async function enterRoom(room) {
   }
 
   realtimeSubscription = supabaseClient
-    .channel(`room-${room.id}`)
-    .on('postgres_changes', {
+    .channel(`room-${room.id}`, {
+      config: {
+        presence: { key: currentUser.id }
+      }
+    })
+    
+  // 접속자 정보 동기화 처리
+  realtimeSubscription.on('presence', { event: 'sync' }, () => {
+    const newState = realtimeSubscription.presenceState()
+    const onlineNames = []
+    for (const id in newState) {
+      if (newState[id][0] && newState[id][0].name) {
+        onlineNames.push(newState[id][0].name)
+      }
+    }
+    document.getElementById('onlineUsersList').textContent = onlineNames.join(', ') || '나'
+  })
+
+  // 메시지 실시간 수신 처리
+  realtimeSubscription.on('postgres_changes', {
       event: 'INSERT',
       schema: 'public',
       table: 'messages',
       filter: `room_id=eq.${room.id}`
-    }, (payload) => {
+    }, async (payload) => {
+      // 새로운 사용자가 보낸 메시지라면 이름 정보 가져오기
+      if (!userCache[payload.new.user_id]) {
+        const { data } = await supabaseClient.from('user_profiles').select('name').eq('id', payload.new.user_id).single()
+        if (data) userCache[payload.new.user_id] = data.name
+      }
       appendMessage(payload.new)
     })
-    .subscribe()
+    
+  // 구독 시작
+  realtimeSubscription.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await realtimeSubscription.track({
+        name: userCache[currentUser.id] || currentUser.email.split('@')[0],
+        online_at: new Date().toISOString()
+      })
+    }
+  })
 }
 
 // 메시지 불러오기
@@ -98,6 +136,21 @@ async function loadMessages(roomId) {
     return
   }
 
+  // 사용자 정보 한 번에 캐싱하기
+  const userIds = [...new Set(messages.map(m => m.user_id))]
+  const missingIds = userIds.filter(id => !userCache[id])
+  
+  if (missingIds.length > 0) {
+    const { data: profiles } = await supabaseClient
+      .from('user_profiles')
+      .select('id, name')
+      .in('id', missingIds)
+      
+    if (profiles) {
+      profiles.forEach(p => userCache[p.id] = p.name)
+    }
+  }
+
   const chatMessages = document.getElementById('chatMessages')
   chatMessages.innerHTML = ''
   messages.forEach(msg => appendMessage(msg))
@@ -108,13 +161,14 @@ async function loadMessages(roomId) {
 function appendMessage(msg) {
   const chatMessages = document.getElementById('chatMessages')
   const isMe = msg.user_id === currentUser.id
+  const userName = isMe ? '나' : (userCache[msg.user_id] || '멤버')
 
   const div = document.createElement('div')
   div.className = `message ${isMe ? 'mine' : ''}`
   div.innerHTML = `
-    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(msg.user_id.slice(0, 2))}&background=4F46E5&color=fff" alt="avatar">
+    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName.slice(0, 2))}&background=4F46E5&color=fff" alt="avatar">
     <div class="message-content">
-      <div class="message-name">${isMe ? '나' : '멤버'}</div>
+      <div class="message-name">${escapeHtml(userName)}</div>
       <div class="message-bubble">${escapeHtml(msg.content)}</div>
       <div style="font-size:0.7rem; color:#9ca3af; margin-top:3px; ${isMe ? 'text-align:right;' : ''}">${formatDate(msg.created_at)}</div>
     </div>
