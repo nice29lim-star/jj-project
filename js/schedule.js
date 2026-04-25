@@ -28,39 +28,53 @@ async function loadSchedules() {
   renderSchedules(schedules)
 }
 
-// 일정 렌더링
+let calendar = null
+
+// 일정 렌더링 (FullCalendar)
 function renderSchedules(schedules) {
-  const list = document.getElementById('scheduleList')
-  list.innerHTML = ''
-
-  // 지난 일정 / 예정 일정 분류
-  const now = new Date()
-  const upcoming = schedules.filter(s => new Date(s.start_date) >= now)
-  const past = schedules.filter(s => new Date(s.start_date) < now)
-
-  if (schedules.length === 0) {
-    list.innerHTML = `
-      <div style="text-align:center; padding:60px; color:#9ca3af;">
-        <div style="font-size:3rem; margin-bottom:15px;">📅</div>
-        <p>등록된 일정이 없습니다.</p>
-      </div>
-    `
-    return
+  const calendarEl = document.getElementById('calendar')
+  
+  // 기존 캘린더가 있으면 파괴
+  if (calendar) {
+    calendar.destroy()
   }
 
-  if (upcoming.length > 0) {
-    list.innerHTML += `<div style="font-weight:700; color:#4F46E5; margin-bottom:12px; font-size:1rem;">📌 예정된 일정</div>`
-    upcoming.forEach(schedule => {
-      list.appendChild(createScheduleElement(schedule))
-    })
-  }
+  // Supabase 데이터를 FullCalendar 포맷으로 변환
+  const events = schedules.map(s => ({
+    id: s.id,
+    title: s.title,
+    start: s.start_date,
+    end: s.end_date || null,
+    backgroundColor: s.color || '#4F46E5',
+    borderColor: s.color || '#4F46E5',
+    extendedProps: {
+      description: s.description,
+      user_id: s.user_id
+    }
+  }))
 
-  if (past.length > 0) {
-    list.innerHTML += `<div style="font-weight:700; color:#9ca3af; margin:20px 0 12px; font-size:1rem;">✅ 지난 일정</div>`
-    past.forEach(schedule => {
-      list.appendChild(createScheduleElement(schedule, true))
-    })
-  }
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek'
+    },
+    events: events,
+    locale: 'ko', // 한국어 설정
+    eventClick: function(info) {
+      // 이벤트 클릭 시 상세보기 또는 수정 (본인인 경우)
+      const s = info.event
+      const p = s.extendedProps
+      if (p.user_id === currentUser.id) {
+        openEditModal(s.id, s.title, p.description, s.startStr, s.endStr, s.backgroundColor)
+      } else {
+        alert(`📌 ${s.title}\n${p.description || '설명 없음'}`);
+      }
+    }
+  })
+
+  calendar.render()
 }
 
 // 일정 요소 생성

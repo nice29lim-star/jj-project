@@ -6,6 +6,7 @@
   <title>JJ Project - 일정</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 </head>
 <body>
 
@@ -27,13 +28,13 @@
 <!-- 메인 -->
 <div class="container">
   <div class="page-header">
-    <h2>📅 일정 공유</h2>
+    <h2>📅 팀 캘린더</h2>
     <button class="btn btn-primary" onclick="openModal('addScheduleModal')">+ 일정 추가</button>
   </div>
 
-  <!-- 일정 목록 -->
-  <div class="schedule-list" id="scheduleList">
-    <div style="text-align:center; padding:40px; color:#9ca3af;">로딩 중...</div>
+  <!-- 캘린더 영역 -->
+  <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div id="calendar"></div>
   </div>
 </div>
 
